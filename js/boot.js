@@ -55,6 +55,33 @@
       else img.src = urlFor('tex', name);
     });
   }
+  // texture page for the website pack: fetched as a blob (with retries) and decoded to an ImageBitmap,
+  // which is closed right after the GPU upload to keep memory low on phones
+  function blobToImage(blob) {
+    return new Promise((res, rej) => {
+      const url = URL.createObjectURL(blob);
+      const img = new Image();
+      img.onload = () => { URL.revokeObjectURL(url); res(img); };
+      img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('the browser could not decode the image')); };
+      img.src = url;
+    });
+  }
+  async function loadPackTexture(name) {
+    let last = null;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        const r = await fetch('data/tex/' + name, { cache: attempt ? 'reload' : 'default' });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const blob = await r.blob();
+        if (window.createImageBitmap) {
+          try { return await createImageBitmap(blob, { premultiplyAlpha: 'none', colorSpaceConversion: 'none' }); } catch (e) { /* fall back to <img> */ }
+        }
+        return await blobToImage(blob);
+      } catch (e) { last = e; }
+    }
+    throw new Error('texture ' + name + ' (' + (last && last.message ? last.message : last) + ')');
+  }
+
   async function tryLoadPack(progress) {
     let r;
     try { r = await fetch('data/game.json'); } catch (e) { return false; }
@@ -111,7 +138,12 @@
     // textures
     say('textures');
     const pages = Math.max(...sprites.filter(Boolean).flatMap(s => s.frames.filter(Boolean).map(f => f.p)), ...fonts.filter(Boolean).map(f => f.tex ? f.tex.p : 0)) + 1;
-    await Promise.all(Array.from({ length: pages }, (_, i) => getImage(i + '.png').then(img => D.addPage(i, img))));
+    for (let i = 0; i < pages; i++) {
+      say(`textures ${i + 1}/${pages}`);
+      const img = PACK ? await loadPackTexture(i + '.png') : await getImage(i + '.png');
+      D.addPage(i, img);
+      if (img.close) img.close();
+    }
     // language file into the virtual file system
     GM.vfs.set('lang/lang_en.json', await getText('assets', 'lang/lang_en.json'));
     // sounds
@@ -123,7 +155,8 @@
       entries.push({ index: i, url: s.file.startsWith('ext:') ? s.file : 'snd:' + s.file });
     });
     await GM.audio.loadSounds(entries, (d, n) => say(`sounds ${d}/${n}`));
-    await Promise.all(JF.MUSIC.map(f => GM.audio.preloadStream('mus/' + f).catch(e => console.warn(e))));
+    // the two game-over songs are loaded on first use (audio_create_stream), saving memory on phones
+    await Promise.all(JF.MUSIC.slice(0, 2).map(f => GM.audio.preloadStream('mus/' + f).catch(e => console.warn(e))));
     // translated GML
     say('code');
     JF.objectsMeta = objects;
