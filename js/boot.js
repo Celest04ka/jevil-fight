@@ -242,6 +242,7 @@
   JF.LOADOUTS = {
     normal: { weapon: [0, 5, 6, 9], armor1: [0, 1, 1, 4], armor2: [0, 2, 0, 1], items: [6, 2, 8, 8, 13, 1, 1, 1] },
     strong: { weapon: [0, 8, 6, 9], armor1: [0, 5, 5, 4], armor2: [0, 2, 2, 3], items: [6, 2, 2, 11, 8, 13, 13, 12, 12, 1, 1, 1] },
+    strongest: { weapon: [0, 8, 6, 9], armor1: [0, 5, 5, 5], armor2: [0, 2, 2, 4], items: [6, 11, 11, 2, 2, 2, 8, 8, 8, 8, 8, 8] },
     starter: { weapon: [0, 1, 2, 3], armor1: [0, 0, 0, 0], armor2: [0, 0, 0, 0], items: [1, 1, 1] }
   };
   function applyJevilSave(self) {
