@@ -19,6 +19,7 @@
   const LOADOUTS = {
     normal: { name: 'Normal', lines: ['KRIS: Spookysword, Amber Card, Dice Brace', 'SUSIE: Brave Ax, Amber Card', 'RALSEI: Ragger, White Ribbon, Amber Card', 'ITEMS: Top Cake, ReviveMint, 2 Darkburger, ChocDiamond, 3 Dark Candy'] },
     strong: { name: 'Strong', lines: ['KRIS: Trefoil, IronShackle, Dice Brace', 'SUSIE: Brave Ax, IronShackle, Dice Brace', 'RALSEI: Ragger, White Ribbon, Pink Ribbon', 'ITEMS: 12, including 2 ReviveMint and Top Cake'] },
+    strongest: { name: 'Strongest', lines: ['KRIS: Trefoil, IronShackle, Dice Brace', 'SUSIE: Brave Ax, IronShackle, Dice Brace', 'RALSEI: Ragger, IronShackle, White Ribbon', 'ITEMS: Top Cake, 2 Club Sandwiches, 3 ReviveMints, 6 Darkburgers'] },
     starter: { name: 'Starter', lines: ['Starting weapons, no armor', 'ITEMS: 3 Dark Candy'] }
   };
 
